@@ -1,7 +1,5 @@
 // server.js - Entry Point
 
-// NO DATABASE YET, just a test route
-
 const express = require('express');
 const app = express();
 
