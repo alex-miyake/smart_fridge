@@ -4,11 +4,22 @@ require('./db');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const express = require('express');
 const app = express();
+const express = require('express');
+const morgan = require('morgan');
+const fs = require('fs');
+const path = require('path');
+const logger = require('./utils/logger');
 
 // Middleware to parse JSON
 app.use(express.json());
+
+// HTTP request logging to file
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', 'access.log'), { flags: 'a' });
+app.use(morgan('combined', { stream: accessLogStream }));
+
+// Logging HTTP requests to console (might remove)
+app.use(morgan('dev'));
 
 // Test route
 app.get('/', (req, res) => {
@@ -23,7 +34,7 @@ app.post('/test', (req, res) => {
   });
 });
 
-// Start the server
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
