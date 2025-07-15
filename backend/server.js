@@ -9,6 +9,7 @@ const express = require('express');
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
+const authRoutes = require('./routes/authRoutes');
 const logger = require('./utils/logger');
 
 // Middleware to parse JSON
@@ -20,6 +21,8 @@ app.use(morgan('combined', { stream: accessLogStream }));
 
 // Logging HTTP requests to console (might remove)
 app.use(morgan('dev'));
+
+app.use('/api/auth', authRoutes);
 
 // Test route
 app.get('/', (req, res) => {

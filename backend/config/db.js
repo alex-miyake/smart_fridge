@@ -1,4 +1,4 @@
-// integrate a database
+// connect to database
 const mongoose = require('mongoose');
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:201/fridgeapp';
 
