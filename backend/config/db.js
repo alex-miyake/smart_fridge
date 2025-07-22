@@ -1,10 +1,9 @@
-// connect to database
-const mongoose = require('mongoose');
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:201/fridgeapp';
+const { Sequelize } = require('sequelize');
 
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected successfully'))
-.catch((err) => console.error('MongoDB connection error:', err));
+const sequelize = new Sequelize('fridge_inventory', 'fridge_user', 'strong_secure_pw_!2024', {
+  host: 'localhost',
+  dialect: 'postgres',
+  logging: false,
+});
+
+module.exports = sequelize;

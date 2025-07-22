@@ -1,16 +1,17 @@
-// server.js - Entry Point
-require('./db');
-
 const dotenv = require('dotenv');
-dotenv.config();
-
-const app = express();
 const express = require('express');
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
 const authRoutes = require('./routes/authRoutes');
-const logger = require('./utils/logger');
+const sequelize = require('./config/db');
+const fridgeRoutes = require('./routes/fridgeRoutes');
+const userRoutes = require('./routes/userRoutes');
+const mealPostRoutes = require('./routes/mealPostRoutes');
+const recipeRoutes = require('./routes/recipeRoutes');
+
+dotenv.config();
+const app = express();
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -20,9 +21,13 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', 'acces
 app.use(morgan('combined', { stream: accessLogStream }));
 
 // Logging HTTP requests to console (might remove)
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/fridge', fridgeRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/meals', mealPostRoutes);
+app.use('/api/recipes', recipeRoutes);
 
 // Test route
 app.get('/', (req, res) => {
@@ -42,3 +47,8 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+// sync to postgreSQL
+sequelize.sync({ alter: true })
+  .then(() => console.log('PostgreSQL synced all models'))
+  .catch(err => console.error('Sync failed:', err));
