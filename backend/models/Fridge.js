@@ -1,5 +1,4 @@
 /*
-
 Schema for fridge contents.
 
 Could expand this to cupboard as well - for dried foods and seasonings.

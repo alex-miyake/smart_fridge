@@ -1,6 +1,13 @@
+/**
+ * @file CRUD operations for User resource.
+ */
+
 const {User} = require('../models/User');
 
-// Add new user
+/**
+ * Creates a new user.
+ * @route POST /api/users
+ */
 exports.createUser = async (req, res) => {
   try {
     const user = await User.create(req.body);
@@ -10,7 +17,10 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// See all users
+/**
+ * Retrieves all users.
+ * @route GET /api/users
+ */
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll();
@@ -20,7 +30,10 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// 1 user
+/**
+ * Retrieves a single user by ID.
+ * @route GET /api/users/:id
+ */
 exports.getUser = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -31,7 +44,10 @@ exports.getUser = async (req, res) => {
   }
 };
 
-// Update user
+/**
+ * Updates a user by ID.
+ * @route PUT /api/users/:id
+ */
 exports.updateUser = async (req, res) => {
   try {
     const [updated] = await User.update(req.body, { where: { id: req.params.id } });
@@ -43,7 +59,10 @@ exports.updateUser = async (req, res) => {
   }
 };
 
-// Delete user
+/**
+ * Deletes a user by ID.
+ * @route DELETE /api/users/:id
+ */
 exports.deleteUser = async (req, res) => {
   try {
     const deleted = await User.destroy({ where: { id: req.params.id } });

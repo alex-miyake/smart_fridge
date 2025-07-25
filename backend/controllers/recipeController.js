@@ -1,5 +1,13 @@
+/**
+ * @file CRUD operations for Recipe resource.
+ */
+
 const { Recipe } = require('../models/Recipe');
 
+/**
+ * Creates a new recipe.
+ * @route POST /api/recipes
+ */
 exports.createRecipe = async (req, res) => {
   try {
     const recipe = await Recipe.create(req.body);
@@ -9,6 +17,10 @@ exports.createRecipe = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves all recipes.
+ * @route GET /api/recipes
+ */
 exports.getAllRecipes = async (req, res) => {
   try {
     const recipes = await Recipe.findAll();
@@ -18,6 +30,10 @@ exports.getAllRecipes = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves a single recipe by ID.
+ * @route GET /api/recipes/:id
+ */
 exports.getRecipe = async (req, res) => {
   try {
     const recipe = await Recipe.findByPk(req.params.id);
@@ -28,6 +44,10 @@ exports.getRecipe = async (req, res) => {
   }
 };
 
+/**
+ *  Updates a single recipe by ID.
+ * @route PUT /api/recipes/:id
+ */
 exports.updateRecipe = async (req, res) => {
   try {
     const [updated] = await Recipe.update(req.body, { where: { id: req.params.id } });
@@ -39,6 +59,10 @@ exports.updateRecipe = async (req, res) => {
   }
 };
 
+/**
+ *  Deletes a single recipe by ID.
+ * @route DELETE /api/recipes/:id
+ */
 exports.deleteRecipe = async (req, res) => {
   try {
     const deleted = await Recipe.destroy({ where: { id: req.params.id } });

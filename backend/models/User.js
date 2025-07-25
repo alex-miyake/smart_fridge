@@ -1,7 +1,5 @@
 /* 
-Schema for each user with basic fields 
-
-(Can add extra fields).
+Schema for each user
 */
 
 const { DataTypes } = require('sequelize');
@@ -11,6 +9,7 @@ const User = sequelize.define('User', {
   username: { type: DataTypes.STRING, unique: true, allowNull: false },
   email:    { type: DataTypes.STRING, unique: true, allowNull: false },
   password: { type: DataTypes.STRING, allowNull: false },
+  refreshToken: { type: DataTyypes.STRING, allowNull: true }
 });
 
 module.exports = User;

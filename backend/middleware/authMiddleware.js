@@ -14,7 +14,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user');
 require('dotenv').config();
 
-const authMiddleware = async (req, res, next) => {
+const authenticate = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     // check request header has token
@@ -31,8 +31,8 @@ const authMiddleware = async (req, res, next) => {
         next();
     }
     catch (error) {
-        res.status(401).json({ message: 'Invalid token' });
+        res.status(401).json({ message: 'Invalid or expired token' });
     }
 };
 
-module.exports = authMiddleware;
+module.exports = authenticate;
