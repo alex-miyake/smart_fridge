@@ -1,17 +1,24 @@
-// Authentication
-
-/*
-Use this in the routes scripts: 
-
-For e.g.: if posting with POST /meal-posts:
-    const auth = require('../middleware/authMiddleware');
-    router.post('/', auth, fridgeController.addItem);
-
-(This can be added later)
-*/
-
+/**
+ * @file authMiddleware.js
+ * @description Middleware to authenticate users via JWT. 
+ *              It checks for a valid Bearer token in the Authorization header, 
+ *              verifies it, and attaches the authenticated user to the request object.
+ *
+ * ## Usage:
+ * Apply this middleware to any protected route to ensure only authenticated users can access it.
+ *
+ * ## Example:
+ * router.get('/protected', authenticate, controller.protectedRoute);
+ *
+ * ## Dependencies:
+ * @requires jsonwebtoken  For verifying the JWT token.
+ * @requires ../models/user  Mongoose User model to retrieve user data.
+ * @requires dotenv  Loads environment variables from .env file.
+ *
+ * @module middleware/authMiddleware
+ */
 const jwt = require('jsonwebtoken')
-const User = require('../models/user');
+const User = require('../models/User');
 require('dotenv').config();
 
 const authenticate = async (req, res, next) => {

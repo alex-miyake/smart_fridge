@@ -70,10 +70,10 @@ app.post('/test', (req, res) => {
   });
 });
 
-// sync to postgreSQL
-sequelize.sync({ alter: true })
-  .then(() => console.log('PostgreSQL synced all models'))
-  .catch(err => console.error('Sync failed:', err));
+// sync to postgreSQL db container
+sequelize.authenticate()
+  .then(() => console.log('Connected to PostgreSQL database container'))
+  .catch(err => console.error('DB connection error:', err));
   
 // Start server
 const PORT = process.env.PORT || 3000;

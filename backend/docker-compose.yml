@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  backend:
+    build: .
+    container_name: fridge_backend
+    ports:
+      - '3001:3000'
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: node server.js
+
+  db:
+    image: postgres:15
+    container_name: fridge_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
