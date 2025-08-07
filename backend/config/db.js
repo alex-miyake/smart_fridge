@@ -12,20 +12,20 @@
  * @requires sequelize Sequelize ORM constructor.
  * 
  * @exports sequelize Sequelize instance for executing queries and syncing models.
- */
+*/
+
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
+  process.env.PG_USER,
+  process.env.PG_PASSWORD,
   {
-    host: process.env.DB_HOST,
+    host: 'localhost',
     dialect: 'postgres',
     port: process.env.DB_PORT || 5432,
     logging: false,
   }
 );
-
 module.exports = sequelize;

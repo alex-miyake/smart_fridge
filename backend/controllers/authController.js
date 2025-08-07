@@ -4,7 +4,7 @@
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { User } = require('../models/User');
 require('dotenv').config();
 
 // Generate JWT tokens
@@ -18,11 +18,11 @@ const generateRefreshToken = (user) => jwt.sign(user, process.env.REFRESH_SECRET
  * @returns {Object} 201 - Created user without password.
  */
 exports.registerUser = async (req,res) => {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
 
     try {
         // see if user email already exists
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ where: {email} });
         if (userExists) {
             return res.status(400).json({ message: 'Email already in use' });
         }
@@ -33,20 +33,22 @@ exports.registerUser = async (req,res) => {
 
         // create user entry
         const user = await User.create({
-            name, 
+            username, 
             email,
             password: hashedPassword,
         });
 
         // Respond with token and user info 
         res.status(201).json({
-            _id: user._id,
-            name: user.name,
+            id: user.id,
+            username: user.username,
             email: user.email,
-            token: generateToken(user._id),
+            token: generateAccessToken(user.id),
         });
         } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+            console.error("Error during user registration:", error); // Log to console / docker logs
+            console.error(error.stack); // Log to trace 
+            res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -61,7 +63,7 @@ exports.loginUser = async (req, res) => {
 
   try {
     // Find user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: {email} });
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -76,20 +78,22 @@ exports.loginUser = async (req, res) => {
     const payload = { id: user.id, email: user.email };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
-    user.resfreshToken = resfreshToken;
-    await user.save();
+    
+    await user.update({ refreshToken: refreshToken });
 
     // store refresh token for logout
     res.json({ accessToken, refreshToken });
 
     // Send response
     res.json({
-      _id: user._id,
+      id: user.id,
       name: user.name,
       email: user.email,
-      token: generateToken(user._id),
+      accesstoken: accessToken,
+      refreshtoken: refreshToken,
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -108,8 +112,7 @@ exports.logoutUser = async(req,res) => {
     const user = await User.findOne({ where: { refreshToken } });
     if (!user) return res.sendStatus(204);
 
-    user.refreshToken = null;
-    await user.save();
+    await user.update({ refreshToken: null });
 
     res.status(200).json({ message: 'Logged out successfully' });
   }

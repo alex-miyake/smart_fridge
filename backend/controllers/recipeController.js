@@ -2,7 +2,7 @@
  * @file CRUD operations for Recipe resource.
  */
 
-const { Recipe } = require('../models/Recipe');
+const Recipe = require('../models/Recipe');
 
 /**
  * Creates a new recipe.

@@ -1,68 +1,44 @@
 /**
  * @file server.js
  * @description Main application file. Sets up the Express app, middleware, routes, logging, and starts the server.
- * 
- * Responsibilities:
- * - Loads environment variables.
- * - Initializes Express application.
- * - Applies JSON parsing middleware.
- * - Applies logging middleware (to console and to file).
- * - Mounts API route handlers for authentication, fridge items, users, meal posts, and recipes.
- * - Handles root and test routes for basic health checks.
- * - Syncs Sequelize models with the PostgreSQL database.
- * - Starts listening on the defined port.
- * 
- * @requires express Creates the app and HTTP routes.
- * @requires dotenv Loads environment variables.
- * @requires morgan Logs HTTP requests.
- * @requires fs Creates stream for writing logs to a file.
- * @requires path Resolves file paths.
- * @requires ./routes/authRoutes Contains login and register route handlers.
- * @requires ./config/db Sequelize instance connected to PostgreSQL.
- * @requires ./utils/logger Winston logger for app-level logging.
- * @requires model files Loads all Sequelize models so they are registered before syncing.
- * 
- * @usage
- * Run with: `node server.js`
  */
+
+process.on('uncaughtException', (err) => {
+  console.error('There was an uncaught error:', err);
+  process.exit(1);
+});
 
 const dotenv = require('dotenv');
 const express = require('express');
-const morgan = require('morgan');
-const fs = require('fs');
-const path = require('path');
-const authRoutes = require('./routes/authRoutes');
-const sequelize = require('./config/db');
 const fridgeRoutes = require('./routes/fridgeRoutes');
 const userRoutes = require('./routes/userRoutes');
-const mealPostRoutes = require('./routes/mealPostRoutes');
-const recipeRoutes = require('./routes/recipeRoutes');
-
 dotenv.config();
 const app = express();
+const sequelize = require('./config/db');
 
-// Middleware to parse JSON
 app.use(express.json());
-
-// HTTP request logging to file
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', 'access.log'), { flags: 'a' });
-app.use(morgan('combined', { stream: accessLogStream }));
-
-// Logging HTTP requests to console (might remove)
-app.use(morgan('dev'));
-
-app.use('/api/auth', authRoutes);
 app.use('/api/fridge', fridgeRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/meals', mealPostRoutes);
-app.use('/api/recipes', recipeRoutes);
 
-// Test route
-app.get('/', (req, res) => {
-  res.send('test route successful! bumba');
-});
+/**
+const fs = require('fs');
+const path = require('path');
+const morgan = require('morgan');
+const authRoutes = require('./routes/authRoutes');
+const mealPostRoutes = require('./routes/mealPostRoutes');
+const recipeRoutes = require('./routes/recipeRoutes');*/
 
-// Optional test API
+// HTTP request logging to file
+//const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', 'access.log'), { flags: 'a' });
+//app.use(morgan('combined', { stream: accessLogStream }));
+//app.use(morgan('dev'));
+
+
+//app.use('/api/auth', authRoutes);
+//app.use('/api/meals', mealPostRoutes);
+//app.use('/api/recipes', recipeRoutes);
+
+//Optional test API
 app.post('/test', (req, res) => {
   res.json({
     message: 'POST received!',
@@ -70,14 +46,33 @@ app.post('/test', (req, res) => {
   });
 });
 
-// sync to postgreSQL db container
-sequelize.authenticate()
-  .then(() => console.log('Connected to PostgreSQL database container'))
-  .catch(err => console.error('DB connection error:', err));
-  
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
 
+const PORT = process.env.PORT || 3000;
+const HOST = '0.0.0.0';
+
+async function startServer() {
+  try {
+    // Check database connection
+    await sequelize.authenticate()
+    .then(() => {
+    console.log('Connection to PostgreSQL has been established successfully.');
+    })
+    .catch(err => {
+      console.error('Unable to connect to the database:', err);
+    });
+  
+    // Sync models
+    await sequelize.sync({ force: false });
+    console.log('Database synchronized. Tables created or updated.');
+  
+    // Start server
+    app.listen(PORT, HOST, () => {
+      console.log(`Server running on http://${HOST}:${PORT}`);  
+    });
+  } 
+  catch (err) {
+    console.error('Error during database sync or server startup:', err);
+  }
+}
+
+startServer();

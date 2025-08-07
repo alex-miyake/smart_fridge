@@ -2,7 +2,7 @@
  * @file CRUD operations for User resource.
  */
 
-const {User} = require('../models/User');
+const User = require('../models/User');
 
 /**
  * Creates a new user.
@@ -26,6 +26,7 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.findAll();
     res.json(users);
   } catch (err) {
+    console.error('Error fetching users:', err); 
     res.status(500).json({ error: err.message });
   }
 };
@@ -36,10 +37,14 @@ exports.getAllUsers = async (req, res) => {
  */
 exports.getUser = async (req, res) => {
   try {
+    console.log('Requested user ID:', req.params.id);
+    console.log('User model exists?', !!User);
     const user = await User.findByPk(req.params.id);
+    console.log('User found:', user);
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (err) {
+    console.error('Error in getUser controller:', err); 
     res.status(500).json({ error: err.message });
   }
 };

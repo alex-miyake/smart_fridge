@@ -22,15 +22,23 @@
 const express = require('express');
 const router = express.Router();
 const fridgeController = require('../controllers/fridgeController');
+/**
 const authenticate = require('../middleware/authMiddleware');
 const { createFridgeItemValidation, updateFridgeItemValidation } = require('../validators/fridgeValidator');
 const validateRequest = require('../middleware/validateRequest');
+*/ 
 
-// Protected routes (all private for now)
+/** Protected routes (all private for now)
 router.post('/', authenticate, createFridgeItemValidation, validateRequest, fridgeController.createFridgeItem);    
 router.get('/', authenticate, fridgeController.getAllFridgeItems);  
 router.get('/:id', authenticate, fridgeController.getFridgeItem);    
 router.put('/:id', authenticate, updateFridgeItemValidation, validateRequest, fridgeController.updateFridgeItem);  
-router.delete('/:id', authenticate, fridgeController.deleteFridgeItem);
+router.delete('/:id', authenticate, fridgeController.deleteFridgeItem);*/
+
+router.post('/', fridgeController.createFridgeItem);    
+router.get('/', fridgeController.getAllFridgeItems);  
+router.get('/:id', fridgeController.getFridgeItem);    
+router.put('/:id', fridgeController.updateFridgeItem);  
+router.delete('/:id', fridgeController.deleteFridgeItem);
 
 module.exports = router;

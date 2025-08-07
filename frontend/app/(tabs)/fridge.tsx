@@ -1,20 +1,75 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState, useRef, } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { callApi } from '../../api/apiClient' ;
 
-// Example static data (replace with DB data later)
-const fridgeItems = [
-  { id: '1', name: 'Food 1', description: 'Lorem ipsum dolor', quantity: 9 },
-  { id: '2', name: 'Food 2', description: 'Lorem ipsum dolor', quantity: 3 },
-  { id: '3', name: 'Food 3', description: 'Lorem ipsum dolor', quantity: 1 },
-  { id: '4', name: 'Food 4', description: 'Lorem ipsum dolor', quantity: 4 },
-  { id: '5', name: 'Food 5', description: 'Lorem ipsum dolor', quantity: 1 },
-  { id: '6', name: 'Food 6', description: 'Lorem ipsum dolor', quantity: 8 },
-  { id: '7', name: 'Food 7', description: 'Lorem ipsum dolor', quantity: 10 },
-  { id: '8', name: 'Food 8', description: 'Lorem ipsum dolor', quantity: 2 },
-];
+interface FridgeItem {
+  id: number;
+  name: string;
+  quantity: number;
+  unit: string;
+  expiryDate: string;
+  UserId: number;
+}
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  password: string;
+}
 
 export default function FridgeScreen() {
+  const [fridgeItems, setFridgeItems] = useState<FridgeItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser ] = useState<User | null>(null);
+  const router = useRouter();
+
+  const hasFetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+    console.log('[FridgeScreen] useEffect triggered');
+
+    // Get fridge items and username
+    const fetchData = async () => {
+      try {
+
+        setLoading(true);
+        setError(null);
+        console.log('fetching Items...');
+
+        // fetch fridge items
+        const fridgeData = await callApi('/api/fridge', {
+          method: 'GET',
+          requiresAuth: true,
+        });
+        const filtered = (fridgeData as FridgeItem[]).filter(item => item.UserId === 1);
+        //console.log('[FridgeScreen] filtered API data:', filtered);
+        setFridgeItems(filtered);
+
+        // hardcode test user id for now
+        const userData = await callApi('/api/users/1', {
+        method: 'GET',
+        //requiresAuth: true,
+      });
+      setUser(userData as User);
+      } 
+      catch (error: any) {
+        console.error('Failed to load fridge or user data:', error);
+        setError('Failed to fetch fridge data. Please check your network connection');
+      } 
+      finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const renderItem = ({ item }: any) => (
     <View style={styles.card}>
       {/* Placeholder for food image icon */}
@@ -27,11 +82,19 @@ export default function FridgeScreen() {
 
       <View style={styles.textContainer}>
         <Text style={styles.foodName}>{item.name}</Text>
-        <Text style={styles.foodDesc}>{item.description}</Text>
+        <Text style={styles.foodDesc}>{item.unit}</Text> 
       </View>
 
     </View>
   );
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -39,9 +102,9 @@ export default function FridgeScreen() {
       <View style={styles.header}>
         <View>
           <Text style={styles.welcomeText}>Welcome back,</Text>
-          <Text style={styles.username}>Username</Text>
+          <Text style={styles.username}>{user ? user.username : 'Guest'}</Text>
         </View>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={styles.addButton}onPress={() => router.push('/addItem')}>
           <Ionicons name="add" size={20} color="#000" />
           <Text style={styles.addText}>Add</Text>
         </TouchableOpacity>
@@ -50,7 +113,7 @@ export default function FridgeScreen() {
       {/* Grid of food items */}
       <FlatList
         data={fridgeItems}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: 'space-between' }}

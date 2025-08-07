@@ -33,10 +33,17 @@ const validateRequest = require('../middleware/validateRequest');
 // Public
 router.post('/', createUserValidation, validateRequest, userController.createUser);
 
-// Protected
+/** Protected
 router.get('/', authenticate, userController.getAllUsers);
 router.get('/:id', authenticate, userController.getUser);
 router.put('/:id', authenticate, updateUserValidation, validateRequest, userController.updateUser);
 router.delete('/:id', authenticate, userController.deleteUser);
+*/
+
+// doing without authentication for now
+router.get('/', userController.getAllUsers);
+router.get('/:id', userController.getUser);
+router.put('/:id', userController.updateUser);
+router.delete('/:id', userController.deleteUser);
 
 module.exports = router;

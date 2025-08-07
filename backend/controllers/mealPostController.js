@@ -2,7 +2,7 @@
  * @file CRUD operations for meal Post resource.
  */
 
-const { MealPost } = require('../models/MealPost');
+const MealPost = require('../models/MealPost');
 
 /**
  * Creates a new meal post.
