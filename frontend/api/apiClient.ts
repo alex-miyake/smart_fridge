@@ -2,10 +2,6 @@
  * @file Centralised API logic, includes JWT token handling.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_URL } from '../config';
-import Constants from 'expo-constants';
-
 export type CustomHeadersInit = Headers | string[][] | Record<string, string>;
 
 export type ApiOptions = {
@@ -53,6 +49,10 @@ export const callApi = async (endpoint: string, options: ApiOptions = {}) => {
     }
 
     // Return the parsed JSON response
+
+    if (response.status === 204) {
+      return null;    // If 204 No Content, return null or empty (for deletion)
+    }
     return response.json();
   } catch (networkError: any) {
     console.error('Network or API call error:', networkError);

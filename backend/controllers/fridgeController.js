@@ -10,11 +10,22 @@ const Fridge = require('../models/Fridge');
  * @access Private
  */
 exports.createFridgeItem = async (req, res) => {
+    console.debug("[DEBUG] Incoming request body:", req.body);
     try {
-        const item = await Fridge.create(req.body);
+        const { name, quantity, unit, expiryDate, userId } = req.body;
+        
+        // Explicitly map 'userId' to 'UserId' from frontend request
+        const item = await Fridge.create({
+            name,
+            quantity,
+            unit,
+            expiryDate,
+            UserId: userId 
+        });
         res.status(201).json(item);
     }
     catch (err) {
+        console.error("[DEBUG] Sequelize error:", err);
         res.status (400).json({ error:err.message });
     }
 };

@@ -16,7 +16,7 @@ exports.createRecipe = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
-
+s
 /**
  * Retrieves all recipes.
  * @route GET /api/recipes

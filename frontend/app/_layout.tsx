@@ -21,7 +21,7 @@ export default function RootLayout() {
     <ThemeProvider value={DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="(modals)/addItem" options={{presentation: "modal", title: "Add item"}} />
       </Stack>
       <StatusBar style="dark" /> {/* Ensures status bar is dark text */}
     </ThemeProvider>
