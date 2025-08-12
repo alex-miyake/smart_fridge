@@ -47,7 +47,7 @@ app.post('/test', (req, res) => {
 });
 
 
-const PORT = process.env.DB_PORT || 3000;
+const PORT = process.env.PORT;
 const HOST = '0.0.0.0';
 
 async function startServer() {
