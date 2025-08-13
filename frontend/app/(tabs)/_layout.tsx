@@ -8,23 +8,27 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { StatusBar } from 'expo-status-bar';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() ?? 'light';
+  const activeTint = useThemeColor({}, 'tint');       // alias to primary in Colors
+  const inactiveTint = useThemeColor({}, 'muted');    // muted text color
+  const tabBackground = useThemeColor({}, 'background');
+  const tabBorder = useThemeColor({}, 'border');
 
   return (
-    // SafeAreaProvider wraps all tab screens globally
-    <SafeAreaProvider>
+    <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
           headerShown: false,
-          tabBarButton: HapticTab,
-          tabBarBackground: TabBarBackground,
-          tabBarStyle: Platform.select({
-            ios: { position: 'absolute' },
-            default: {},
-          }),
+          tabBarActiveTintColor: activeTint,
+          tabBarInactiveTintColor: inactiveTint,
+          tabBarStyle: {
+            backgroundColor: tabBackground,
+            borderTopColor: tabBorder,
+          },
         }}
       >
         {/* Home Tab */}
@@ -60,13 +64,13 @@ export default function TabLayout() {
           }}
         />
 
-        {/* Map Tab */}
+        {/* Meal Post Tab */}
         <Tabs.Screen
-          name="map"
+          name="Meals"
           options={{
-            title: 'Map',
+            title: 'Meals',
             tabBarIcon: ({ color }) => (
-              <IconSymbol size={28} name="map.fill" color={color} />
+              <IconSymbol size={28} name="fork.knife.circle.fill" color={color} />
             ),
           }}
         />
@@ -80,8 +84,8 @@ export default function TabLayout() {
               <IconSymbol size={28} name="cube.fill" color={color} />
             ),
           }}
-        />
+        />        
       </Tabs>
-    </SafeAreaProvider>
+    </>
   );
 }
