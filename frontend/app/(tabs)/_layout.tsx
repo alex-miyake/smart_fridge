@@ -1,15 +1,20 @@
+/**
+ * @file Defines bottom tab navigator and tabs/screens inside it. configures tab bar appearance. 
+ */
+
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-import { HapticTab } from '@/components/HapticTab';
+//import { Platform } from 'react-native';
+//import { SafeAreaProvider } from 'react-native-safe-area-context';
+//import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
+//import TabBarBackground from '@/components/ui/TabBarBackground';
+//import { Colors } from '@/constants/Colors';
+//import { StatusBar } from 'expo-status-bar';
+
+// call the colour schemes I defined separately
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { StatusBar } from 'expo-status-bar';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme() ?? 'light';
@@ -18,6 +23,8 @@ export default function TabLayout() {
   const tabBackground = useThemeColor({}, 'background');
   const tabBorder = useThemeColor({}, 'border');
 
+
+  // define route and tab icons 
   return (
     <>
       <Tabs
@@ -66,7 +73,7 @@ export default function TabLayout() {
 
         {/* Meal Post Tab */}
         <Tabs.Screen
-          name="Meals"
+          name="meals"
           options={{
             title: 'Meals',
             tabBarIcon: ({ color }) => (
