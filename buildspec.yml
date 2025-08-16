@@ -1,0 +1,13 @@
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - npm ci
+  build:
+    commands:
+      - npm test
+  post_build:
+  commands:
+    - echo "Seeding database..."
+    - node scripts/seed.js

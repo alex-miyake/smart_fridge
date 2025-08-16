@@ -1,7 +1,7 @@
 /*
 Schema for suggested recipes based on fridge contents.
 
-I'm assuming suggestions will be made using a GPT model so am putting sourceURL as a string. 
+Need to change format to factory function like in fridge and users.
 */
 
 const { DataTypes } = require('sequelize');

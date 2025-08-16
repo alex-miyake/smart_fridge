@@ -1,6 +1,6 @@
 /**
  * @file server.js
- * @description Main application file. Sets up the Express app, middleware, routes, logging, and starts the server.
+ * @description Main application file. Sets up middleware, routes, logging, and starts the server.
  */
 /**
 const fs = require('fs');
@@ -24,28 +24,11 @@ process.on('uncaughtException', (err) => {
 });
 
 const dotenv = require('dotenv');
-const express = require('express');
-const fridgeRoutes = require('./routes/fridgeRoutes');
-const userRoutes = require('./routes/userRoutes');
 const sequelize = require('./config/db');
 
 dotenv.config();
 
-const app = express();
-module.exports = app;
-
-app.use(express.json());
-app.use('/api/fridge', fridgeRoutes);
-app.use('/api/users', userRoutes);
-
-//Optional test API
-app.post('/test', (req, res) => {
-  res.json({
-    message: 'POST received!',
-    data: req.body
-  });
-});
-
+const app = require('../app');
 
 const PORT = process.env.PORT;
 const HOST = '0.0.0.0';
@@ -61,7 +44,7 @@ async function startServer() {
       console.error('Unable to connect to the database:', err);
     });
   
-    // Sync models
+    // Sync models - sync also defined in index file (not using it here tho)
     await sequelize.sync({ force: false });
     console.log('Database synchronized. Tables created or updated.');
   

@@ -1,13 +1,20 @@
 /**
  * @file CRUD operations for meal Post resource.
  */
-const Fridge = require('../models/Fridge');
+
+// Using model injection not the raw file anymore. 
+//const Fridge = require('../models/Fridge'); 
+
+let Fridge;
+
+exports.setModels = (models) => {
+  Fridge = models.Fridge;
+};
+
 
 /**
  * Creates a new item in the user's fridge inventory.
  * @route POST /api/fridge
- * @description Logs a new fridge item with quantity, unit, and expiry date.
- * @access Private
  */
 exports.createFridgeItem = async (req, res) => {
     console.debug("[DEBUG] Incoming request body:", req.body);
@@ -33,15 +40,18 @@ exports.createFridgeItem = async (req, res) => {
 /**
  * Retrieves all fridge items for the authenticated user.
  * @route GET /api/fridge
- * @description Fetches the complete fridge inventory for the current user.
- * @access Private
  */
 exports.getAllFridgeItems = async (req, res) => {
     try {
+        console.log('GET /api/fridge called');
+        console.log('Fridge model:', !!Fridge);
+        console.log('typeof Fridge.findAll:', typeof Fridge.findAll);
+        
         const items = await Fridge.findAll();
-        res.json(items);
+        res.status(200).json(items);
     }
     catch (err) {
+        console.error('Error in GET /api/fridge handler:', err && err.stack ? err.stack : err);
         res.status(500).json({ error: err.message });
     }
 };
@@ -49,8 +59,6 @@ exports.getAllFridgeItems = async (req, res) => {
 /**
  * Retrieves a single fridge item by ID.
  * @route GET /api/fridge/:id
- * @description Fetches a specific ingredient in the user’s fridge.
- * @access Private
  */
 exports.getFridgeItem = async (req,res) => {
     try {
@@ -66,8 +74,6 @@ exports.getFridgeItem = async (req,res) => {
 /**
  * Updates a specific fridge item by ID.
  * @route PUT /api/fridge/:id
- * @description Modifies the quantity, expiry, or unit of an item.
- * @access Private
  */
 exports.updateFridgeItem = async (req,res) => {
     try {
@@ -85,8 +91,6 @@ exports.updateFridgeItem = async (req,res) => {
 /**
  * Deletes a specific fridge item by ID.
  * @route DELETE /api/fridge/:id
- * @description Removes an item from the fridge inventory.
- * @access Private
  */
 exports.deleteFridgeItem = async (req,res) => {
     try {

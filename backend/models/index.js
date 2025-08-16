@@ -1,58 +1,53 @@
-const express = require('express');
-const sequelize = require('./db');
+/**
+ * @file Central file for all model definitions, so each model gets a Sequelize instance passed in. 
+ */
+
+const app = require('../app');
+const sequelize = require('../config/db');
 require('dotenv').config();
+const { DataTypes } = require('sequelize'); // Potential issue?
 
 process.on('uncaughtException', (err) => {
   console.error('There was an uncaught error:', err);
   process.exit(1);
 });
 
-const fridgeRoutes = require('../routes/fridgeRoutes');
-const userRoutes = require('../routes/userRoutes');
-const sequelize = require('../config/db');
-const app = express();
-
-app.use(express.json());
-//mount routes 
-app.use('/fridge', fridgeRoutes);
-app.use('/api/fridge', fridgeRoutes);
-app.use('/api/users', userRoutes);
-
-const ready = sequelize.sync({ force: process.env.NODE_ENV === 'test' });
-
-// Simple middleware to wait for DB ready so supertest hits a ready app
-app.use(async (req, res, next) => {
+const ready = (async () => {
   try {
-    await ready;
-    next();
+    console.log('Authenticating DB...');
+    await sequelize.authenticate();
+    console.log('Syncing DB...');
+    // sync (force in test env)
+    await sequelize.sync({ force: process.env.NODE_ENV === 'test' });
+    console.log('DB is ready');
+    return true;
   } catch (err) {
-    next(err);
+    console.error('Failed to initialize DB in index.js:', err);
+    throw err;
   }
-});
+})();
 
-// Basic error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: err.message || 'Internal server error' });
-});
+function initModels(sequelize) {
+  //  (add other model factories later)
+  const createUser = require('./User');
+  const createFridge = require('./Fridge');
 
-// Only start network listener when run directly (keeps tests fast & isolated)
-if (require.main === module) {
-  (async () => {
-    try {
-      await sequelize.authenticate();
-      console.log('Database connection OK.');
-      await ready;
-      const PORT = process.env.PORT || 3000;
-      const HOST = '0.0.0.0';
-      app.listen(PORT, HOST, () => {
-        console.log(`Server running on http://${HOST}:${PORT}`);
-      });
-    } catch (err) {
-      console.error('Failed to start server:', err);
-      process.exit(1);
-    }
-  })();
+  // define models on sequelize instance
+  const User = createUser(sequelize, DataTypes);
+  const Fridge = createFridge(sequelize, DataTypes);
+
+  // associations
+  User.hasMany(Fridge, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
+  Fridge.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
+
+  return {
+    sequelize,
+    models: {
+      User,
+      Fridge,
+    },
+  };
 }
 
-module.exports = app;
+// Export everything tests/other entrypoints may need
+module.exports = { app, ready, sequelize, initModels, initModels };

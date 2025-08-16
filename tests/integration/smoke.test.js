@@ -3,22 +3,40 @@
  */
 
 const request = require('supertest');
-const app = require('../../backend/server');
-const setupTestDB = require('../setupTestDB');
+const { app, sequelize, models } = require('../setupTestApp');
+const { initTestDB, resetDB, closeDB} = require('../setupTestDB');
+const seed = require('../../scripts/seed');
 
 beforeAll(async () => {
-  await setupTestDB();
+  // populate the in-memory DB (syncs initTestDB within seed function)
+  await seed({ closeConnection: false }); 
 });
 
 afterAll(async () => {
-  // close sequelize connection
-  const { sequelize } = require('../models');
-  await sequelize.close();
+  await closeDB();
 });
 
 describe('Fridge app smoke test', () => {
   test('GET /fridge returns 200 and an array', async () => {
-    const res = await request(app).get('/fridge');
+    let res;
+    try {
+    res = await request(app).get('/api/fridge');
+    console.log('HTTP Response:', res.status, res.body);
+    } catch (err) {
+      console.error('Error while introspecting DB before request:', err && err.stack ? err.stack : err);
+    }
+
+    expect(res).toBeDefined();
+
+    // handling error messages
+    if (res.status === 500) {
+      if (res.body && res.body.stack) {
+        console.error('Error stack returned by server:\n', res.body.stack);
+      } else {
+        console.error('No stack returned by server (inspect res.text).');
+      }
+    }
+
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThanOrEqual(1);

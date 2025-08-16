@@ -19,9 +19,7 @@
  * @requires ../validators/fridgeValidator Validation rules for fridge item input data.
 */
 
-const express = require('express');
-const router = express.Router();
-const fridgeController = require('../controllers/fridgeController');
+
 /**
 const authenticate = require('../middleware/authMiddleware');
 const { createFridgeItemValidation, updateFridgeItemValidation } = require('../validators/fridgeValidator');
@@ -34,6 +32,10 @@ router.get('/', authenticate, fridgeController.getAllFridgeItems);
 router.get('/:id', authenticate, fridgeController.getFridgeItem);    
 router.put('/:id', authenticate, updateFridgeItemValidation, validateRequest, fridgeController.updateFridgeItem);  
 router.delete('/:id', authenticate, fridgeController.deleteFridgeItem);*/
+
+const express = require('express');
+const router = express.Router();
+const fridgeController = require('../controllers/fridgeController');
 
 router.post('/', fridgeController.createFridgeItem);    
 router.get('/', fridgeController.getAllFridgeItems);  

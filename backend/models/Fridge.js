@@ -1,15 +1,15 @@
-/*
-Schema for fridge contents.
-
-Could expand this to cupboard as well - for dried foods and seasonings.
-
+/** 
+ * @file schema for fridge items.
+ *  
+ * Defined as factory functions.
 */
 
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const User = require('./User');
 
-const Fridge = sequelize.define('Fridge', {
+module.exports = (sequelize, DataTypes) => {
+  const Fridge = sequelize.define('Fridge', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -29,7 +29,5 @@ const Fridge = sequelize.define('Fridge', {
 }, {
   timestamps: true,
 });
-
-Fridge.belongsTo(User, { foreignKey: { allowNull: false } });
-
-module.exports = Fridge;
+  return Fridge;
+};

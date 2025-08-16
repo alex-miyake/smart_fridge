@@ -1,7 +1,7 @@
-// models/mealPost.js
 /*
 Schema for a user's meal post/entry.
-This could represent a meal they cooked, consumed, or planned.
+
+Need to change format to factory function like in fridge and users.
 */
 
 const { DataTypes } = require('sequelize');
