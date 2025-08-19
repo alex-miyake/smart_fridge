@@ -2,7 +2,13 @@
  * @file CRUD operations for User resource.
  */
 
-const User = require('../models/User');
+let User;
+
+exports.setModels = (models) => {
+    console.log('[userController] setModels called with:', Object.keys(models || {}));
+    User = models && models.User;
+    if (!User) console.warn('[userController] Warning: User model not found in provided models.');
+};
 
 /**
  * Creates a new user.
@@ -39,6 +45,9 @@ exports.getUser = async (req, res) => {
   try {
     console.log('Requested user ID:', req.params.id);
     console.log('User model exists?', !!User);
+    if (!User) {
+      return res.status(500).json({ error: 'User model not initialized' });
+    }
     const user = await User.findByPk(req.params.id);
     console.log('User found:', user);
     if (!user) return res.status(404).json({ message: 'User not found' });

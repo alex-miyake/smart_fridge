@@ -8,7 +8,9 @@
 let Fridge;
 
 exports.setModels = (models) => {
-  Fridge = models.Fridge;
+    console.log('[fridgeController] setModels called with:', Object.keys(models || {}));
+    Fridge = models && models.Fridge;
+    if (!Fridge) console.warn('[fridgeController] Warning: Fridge model not found in provided models.');
 };
 
 
@@ -47,6 +49,10 @@ exports.getAllFridgeItems = async (req, res) => {
         console.log('Fridge model:', !!Fridge);
         console.log('typeof Fridge.findAll:', typeof Fridge.findAll);
         
+        if (!Fridge) {
+            return res.status(500).json({ error: 'Fridge model not initialized' });
+        }
+
         const items = await Fridge.findAll();
         res.status(200).json(items);
     }
@@ -86,7 +92,6 @@ exports.updateFridgeItem = async (req,res) => {
         res.status(400).json({ error: err.message });
     }
 };
-
 
 /**
  * Deletes a specific fridge item by ID.

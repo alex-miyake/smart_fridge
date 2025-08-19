@@ -18,17 +18,18 @@ const recipeRoutes = require('./routes/recipeRoutes');*/
 //app.use('/api/meals', mealPostRoutes);
 //app.use('/api/recipes', recipeRoutes);
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 process.on('uncaughtException', (err) => {
   console.error('There was an uncaught error:', err);
   process.exit(1);
 });
 
-const dotenv = require('dotenv');
+// Call createApp with the models - GOT CIRCULAR DEPENDENCY HERE!
+const createApp = require('./app');
 const sequelize = require('./config/db');
-
-dotenv.config();
-
-const app = require('../app');
+const { Fridge, User } = require('./models');
 
 const PORT = process.env.PORT;
 const HOST = '0.0.0.0';
@@ -48,6 +49,9 @@ async function startServer() {
     await sequelize.sync({ force: false });
     console.log('Database synchronized. Tables created or updated.');
   
+    // create app instance with models
+    const app = createApp({ Fridge, User });
+
     // Start server
     if (require.main === module) {
     app.listen(PORT, HOST, () => {
@@ -57,6 +61,7 @@ async function startServer() {
   } 
   catch (err) {
     console.error('Error during database sync or server startup:', err);
+    process.exit(1);
   }
 }
 

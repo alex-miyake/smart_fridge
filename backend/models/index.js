@@ -27,27 +27,18 @@ const ready = (async () => {
   }
 })();
 
-function initModels(sequelize) {
+//function initModels(sequelize) {
   //  (add other model factories later)
-  const createUser = require('./User');
-  const createFridge = require('./Fridge');
+const createUser = require('./User');
+const createFridge = require('./Fridge');
 
   // define models on sequelize instance
-  const User = createUser(sequelize, DataTypes);
-  const Fridge = createFridge(sequelize, DataTypes);
+const User = createUser(sequelize, DataTypes);
+const Fridge = createFridge(sequelize, DataTypes);
 
   // associations
-  User.hasMany(Fridge, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
-  Fridge.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
-
-  return {
-    sequelize,
-    models: {
-      User,
-      Fridge,
-    },
-  };
-}
+User.hasMany(Fridge, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
+Fridge.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
 
 // Export everything tests/other entrypoints may need
-module.exports = { app, ready, sequelize, initModels, initModels };
+module.exports = { app, ready, sequelize, User, Fridge };
