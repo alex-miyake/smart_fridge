@@ -1,19 +1,22 @@
 // setupDB.js
 // handles creation/update/deletion of test DB. (uses index/server files).
 
-const sequelize = require('../backend/config/db');
-const { ready, initModels } = require('../backend/models/index');
+const { sequelize, ready, User, Fridge } = require('../backend/models/index');
+const fridgeController = require('../backend/controllers/fridgeController');
 
 require('../backend/models/Fridge');
 
 async function initTestDB({ force = true } = {}) {
   //sequelize.options.logging = console.log;
-  const { models } = initModels(sequelize);
   await ready;
+  const models = sequelize.models;
   if (force){
     await sequelize.sync({ force: true });
   }
-  return { sequelize, models: sequelize.models };
+  // Inject models into controllers for test DB
+  await fridgeController.setModels(models);
+  console.log('Is models.sequelize defined?', models.sequelize !== undefined);
+  return { sequelize, models };
 }
 
 async function resetDB() {
@@ -34,3 +37,5 @@ module.exports = {
   resetDB,
   closeDB,
 };
+
+

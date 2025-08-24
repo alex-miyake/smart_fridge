@@ -3,16 +3,9 @@
 */
 
 const express = require('express');
+const { sequelize} = require('../backend/models/index');
 const fridgeRoutes = require('../backend/routes/fridgeRoutes');
 const userRoutes = require('../backend/routes/userRoutes');
-const { initModels } = require('../backend/models/index');
-const sequelize = require('../backend/config/db');
-
-const { models } = initModels(sequelize);
-
-// Inject models into controllers for test DB
-const fridgeController = require('../backend/controllers/fridgeController');
-fridgeController.setModels(models);
 
 const app = express();
 app.use(express.json());
@@ -30,4 +23,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = { app, sequelize, models };
+// sequelize not rly necessary here 
+module.exports = { app, sequelize };
