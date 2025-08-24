@@ -3,7 +3,7 @@
  */
 
 const request = require('supertest');
-const { app, sequelize, models } = require('../setupTestApp');
+const { app, sequelize } = require('../setupTestApp');
 const { initTestDB, resetDB, closeDB} = require('../setupTestDB');
 const seed = require('../../scripts/seed');
 

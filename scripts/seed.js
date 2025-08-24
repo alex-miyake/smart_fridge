@@ -2,8 +2,7 @@
 // Simple script to populate the test-time in-memory SQLite DB with fridge items.
 
 const { initTestDB, closeDB } = require('../tests/setupTestDB');
-const { sequelize, initModels } = require('../backend/models/index');
-const { User, Fridge } = initModels(sequelize).models;
+const { sequelize, User, Fridge } = require('../backend/models/index');
 
 const seedTestUser = {username: 'Test_User', email: 'testemail@gmail.com', password: 'test_password'};
 
